@@ -1,8 +1,6 @@
-import socks
-proxy = {
-    'proxy_type': socks.PROXY_TYPE_SOCKS5,
-    'addr': '45.94.47.18',
-    'port': 8062,
-    'username': 'unergtzc-dest',
-    'password': 'vc3h2h86oht1'
-}
+
+API_ID = 1219
+API_HASH = "e9f8384b2d0c547d"
+BOT_TOKEN = "uL5Xko0XKNYTasVIgwN-cF8dG2yQ8"
+CHANNEL_ID = -1001513449273
+STARTING_NUMBER = 12147
