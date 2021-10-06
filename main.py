@@ -59,9 +59,9 @@ async def download_file(url, output_file):
 
 
 async def watch_link():
-    print('Watching link')
     async with aiohttp.ClientSession() as session:
         url = next(link_gen)
+        print(f'Watching link : {url}')
         while True:
             try:
                 async with session.get(url=url) as response:
@@ -75,7 +75,9 @@ async def watch_link():
                         await download_file(url, file_loc)
                         await bot.send_file(PEER, file=file_loc, buttons=btns)
                         os.remove(file_loc)
+                        print('Image sent!')
                         url = next(link_gen)
+                        print(f'New target link : {url}')
                         continue
                     else:
                         await asyncio.sleep(0.2)
