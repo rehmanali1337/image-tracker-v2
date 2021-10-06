@@ -5,3 +5,4 @@ __pycache_*
 .vscod*
 sessionFil*
 Downloads/*
+*.zip
