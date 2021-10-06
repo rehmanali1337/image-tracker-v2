@@ -8,6 +8,8 @@ import os
 import socks
 import logging
 import traceback
+import aiofiles
+
 
 logging.basicConfig()
 
@@ -24,9 +26,12 @@ proxy = {
 }
 
 bot = TelegramClient('sessionFiles/bot', config.API_ID,
-                     config.API_HASH)
+                     config.API_HASH, proxy=proxy)
 
 PEER = types.PeerChannel(config.CHANNEL_ID)
+DOWNLOADS = f'./Downloads'
+if not os.path.exists(DOWNLOADS):
+    os.makedirs(DOWNLOADS)
 
 
 def links():
@@ -44,7 +49,17 @@ def generate_gis_link(image_url):
     return f'https://www.google.com/searchbyimage?&image_url={image_url}'
 
 
+async def download_file(url, output_file):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            if resp.status == 200:
+                f = await aiofiles.open(output_file, mode='wb')
+                await f.write(await resp.read())
+                await f.close()
+
+
 async def watch_link():
+    print('Watching link')
     async with aiohttp.ClientSession() as session:
         url = next(link_gen)
         while True:
@@ -55,7 +70,11 @@ async def watch_link():
                             [Button.url(text="Google Image Search",
                                         url=generate_gis_link(url))]
                         ]
-                        await bot.send_file(PEER, file=url, buttons=btns)
+                        name = url.split('/')[-1]
+                        file_loc = f'{DOWNLOADS}/{name}'
+                        await download_file(url, file_loc)
+                        await bot.send_file(PEER, file=file_loc, buttons=btns)
+                        os.remove(file_loc)
                         url = next(link_gen)
                         continue
                     else:
@@ -68,11 +87,8 @@ async def watch_link():
 
 
 async def main():
-    scheduler = AsyncIOScheduler()
-    scheduler.configure()
-    scheduler.start()
     for i in range(10):
-        scheduler.add_job(watch_link)
+        asyncio.create_task(watch_link())
     print('Bot is ready!')
 
 
