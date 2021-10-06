@@ -26,7 +26,7 @@ proxy = {
 }
 
 bot = TelegramClient('sessionFiles/bot', config.API_ID,
-                     config.API_HASH, proxy=proxy)
+                     config.API_HASH)
 
 PEER = types.PeerChannel(config.CHANNEL_ID)
 DOWNLOADS = f'./Downloads'
